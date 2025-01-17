@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 import os
 load_dotenv()
 # OpenAI API Key
-openai_api_key = os.getenv("openai_api_key")
+openai_api_key = os.getenv("OPEN_API_KEY")
 
 
 
