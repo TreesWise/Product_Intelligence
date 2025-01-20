@@ -96,7 +96,7 @@ async def handle_query(userinput: ModelInput, db: SQLDatabase = Depends(get_db_c
           3. if there is no drawing number or drawing number is null, but datapoints is having position number and part number. so it have to generate a unique id for this combination.
           4. if there is no drawing number and position number or both are null, datapoints having same part_number have a unique id.
           5. if there is no drawing number and part number or both are null, datapoints having same position number have a unique id.
-          6.  if there is no position number and part number or both are null, datapoints having same drawing number have a unique id.
+          6. if there is no position number and part number or both are null, datapoints having same drawing number have a unique id.
 
         **Primary Key:**
 
@@ -126,7 +126,8 @@ async def handle_query(userinput: ModelInput, db: SQLDatabase = Depends(get_db_c
         - **equip_type_id**: An identifier for the equipment's category or type, aiding in classification and analysis for asset management, operational planning, and reporting.
         - **equip_model_id**: A specific identifier for the model of the equipment, ensuring that the correct model is tracked and managed.
         - **equip_type_name**: Describes the general category or type of the equipment, facilitating the organization of equipment into logical groups based on function or use.
-
+        - **equip_maker_id**: A unique identifier for the maker or manufacturer of the equipment, critical for tracking and managing suppliers, warranty claims, and quality assurance.
+        
         #### **Manufacturer Metadata**:
         - **maker_name**: The official name of the item’s manufacturer, critical for supplier identification, vendor management, and warranty processing.
         - **maker_code**: A unique code for the manufacturer, simplifying the identification and tracking of suppliers across systems.
@@ -135,11 +136,6 @@ async def handle_query(userinput: ModelInput, db: SQLDatabase = Depends(get_db_c
 
         #### **Unique Identifier and Tracking**:
         - **unique_id**: A 16-character identifier created by combining the PART_NUMBER, DRAWING_NUMBER, and manufacturer details. This unique ID ensures each item is traceable across systems without duplication, providing seamless integration with inventory management, maintenance, and asset tracking systems.
-
-        #### **Additional Metadata for Classification and Maintenance**:
-        - **equip_maker_id**: A unique identifier for the maker or manufacturer of the equipment, critical for tracking and managing suppliers, warranty claims, and quality assurance.
-        """
-
 
         prefix = """
         You are an advanced SQL database assistant specializing in answering user queries by interacting with the `Tbl_Vw_Dm_GDB_Items_UniqueID_Mapped` table in the `Common` schema.
@@ -170,18 +166,18 @@ async def handle_query(userinput: ModelInput, db: SQLDatabase = Depends(get_db_c
         ### SQL Query Construction:
         1. Ensure the query adheres to the **{dialect} dialect** syntax.
         2. Use **specific columns** in the SELECT clause for precision; avoid `SELECT *`.
-        3. Apply **LIMIT {top_k}** unless the user explicitly specifies a different limit in their query. The value of `top_k` is dynamically set to **30** by default for this session, ensuring the response includes at most 30 results unless overridden by user input.
-        - If no explicit limit is mentioned in the query, default to **LIMIT {top_k}**, where `top_k=30` for this session.
+        3. Apply **LIMIT {top_k}** unless the user explicitly specifies a different limit in their query. The value of `top_k` is dynamically set to **10** by default for this session, ensuring the response includes at most 10 results unless overridden by user input.
+        - If no explicit limit is mentioned in the query, default to **LIMIT {top_k}**, where `top_k=10` for this session.
         - If the user explicitly specifies a `LIMIT` value, override the default `top_k` and use the user's provided value.
         - Ensure every SQL query includes a `LIMIT` clause, either with the default `top_k` or as explicitly stated by the user.
         - Priority for `LIMIT`:
           1. Explicit value provided by the user.
-          2. Default value set to `top_k=30` for this session.
-        4. Order results by **relevant columns** for clarity (e.g., `ApprovedDate DESC` for recent approvals).
+          2. Default value set to `top_k=10` for this session.
+        4. Order results by **relevant columns** for clarity (e.g., `ITEM_ID ASC` for ordered lists).
         5. Validate query syntax before execution to ensure success and eliminate errors.
-        6. Incorporate conditions for **filtering by user intent** and domain-specific logic (e.g., fetching purchase orders for a particular `VesselName` or `SMC`).
-        7. When queried regarding **unique vendors**, the unique vendors are supposed to be calculated based on  **VENDOREMAIL**
-        8. Use the **PO_USD_VALUE** column for the questions regarding the purchase.
+        6. Incorporate conditions for **filtering by user intent** and domain-specific logic (e.g., filtering by `SPECIFICATION` or `DRAWING_NUMBER`).
+        7. When queried regarding `unique IDs`, construct the response by adhering to the criteria specified in the `column metadata`. Ensure the `unique ID` is identified based on the combination or relevance of the columns outlined in the metadata, such as `ITEM_ID`, `SPECIFICATION`, `DRAWING_NUMBER`, and any additional fields mentioned. Only provide results that meet these criteria for uniqueness."
+        8. Use the **SPECIFICATION** column for detailed item descriptions.  
         ### Rules of Engagement:
         - Do not perform Data Manipulation Language (DML) operations such as `INSERT`, `UPDATE`, or `DELETE`.
         - Use **Markdown format** for presenting results:
@@ -211,7 +207,7 @@ async def handle_query(userinput: ModelInput, db: SQLDatabase = Depends(get_db_c
         ### Additional Guidelines:
         1. Always validate queries against user intent:
            - Prioritize **relevance and accuracy**.
-           - Use domain-specific filtering for improved results (e.g., filtering by `pocategory_id` for purchase order categories).
+           - Use domain-specific filtering for improved results
         2. Incorporate prompt optimization techniques:
            - Break down **complex questions** into smaller SQL components to ensure accuracy.
            - Apply **logical conditions** (e.g., combining multiple filters using `AND` or `OR`) for precise results.
