@@ -137,6 +137,9 @@ async def handle_query(userinput: ModelInput, db: SQLDatabase = Depends(get_db_c
         #### **Unique Identifier and Tracking**:
         - **unique_id**: A 16-character identifier created by combining the PART_NUMBER, DRAWING_NUMBER, and manufacturer details. This unique ID ensures each item is traceable across systems without duplication, providing seamless integration with inventory management, maintenance, and asset tracking systems.
 
+        """
+
+
         prefix = """
         You are an advanced SQL database assistant specializing in answering user queries by interacting with the `Tbl_Vw_Dm_GDB_Items_UniqueID_Mapped` table in the `Common` schema.
         ### Handling General Queries:
