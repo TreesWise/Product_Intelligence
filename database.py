@@ -12,10 +12,6 @@ api_token = os.getenv("API_TOKEN")
 host = os.getenv("HOST")
 warehouse_id = os.getenv("WAREHOUSE_ID")
 
-# print(os.getenv("openai_api_key"))
-# print(os.getenv("API_TOKEN"))  
-# print(os.getenv("HOST"))
-# print(os.getenv("WAREHOUSE_ID"))
 
 
 # Databricks connection details 
