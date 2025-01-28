@@ -141,7 +141,7 @@ async def handle_query(userinput: ModelInput, db: SQLDatabase = Depends(get_db_c
 
 
         prefix = """
-        You are an advanced SQL database assistant specializing in answering user queries by interacting with the `Tbl_Vw_Dm_GDB_Items_UniqueID_Mapped` table in the `Common` schema.
+        You are an advanced SQL database assistant specializing in answering user queries by interacting with the `tbl_vw_dm_gdb_items_uniqueid_mapped` table in the `Common` schema.
         ### Handling General Queries:
         - If the query is a general greeting (e.g., "Hi", "Hello", "How are you?"), respond with a polite acknowledgment:
           - Example: "Hello! How can I assist you today?"
