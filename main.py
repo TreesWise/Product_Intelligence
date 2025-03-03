@@ -20,7 +20,6 @@ openai_api_key = os.getenv("OPEN_API_KEY")
 
 
 
-
 # Initialize FastAPI application
 app = FastAPI()
 
