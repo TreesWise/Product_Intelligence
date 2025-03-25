@@ -61,7 +61,7 @@ async def handle_query(userinput: ModelInput, db: SQLDatabase = Depends(get_db_c
         
         toolkit = SQLDatabaseToolkit(llm=llm, db=db)
         dialect = toolkit.dialect
-        top_k = 10
+        topk = 10
 
         # Construct the prompt with the provided user input
         column_metadata = """
@@ -168,13 +168,6 @@ async def handle_query(userinput: ModelInput, db: SQLDatabase = Depends(get_db_c
         ### SQL Query Construction:
         1. Ensure the query adheres to the **{dialect} dialect** syntax.
         2. Use **specific columns** in the SELECT clause for precision; avoid `SELECT *`.
-        3. Apply **LIMIT {top_k}** unless the user explicitly specifies a different limit in their query. The value of `top_k` is dynamically set to **10** by default for this session, ensuring the response includes at most 10 results unless overridden by user input.
-        - If no explicit limit is mentioned in the query, default to **LIMIT {top_k}**, where `top_k=10` for this session.
-        - If the user explicitly specifies a `LIMIT` value, override the default `top_k` and use the user's provided value.
-        - Ensure every SQL query includes a `LIMIT` clause, either with the default `top_k` or as explicitly stated by the user.
-        - Priority for `LIMIT`:
-          1. Explicit value provided by the user.
-          2. Default value set to `top_k=10` for this session.
         4. Order results by **relevant columns** for clarity (e.g., `ITEM_ID ASC` for ordered lists).
         5. Validate query syntax before execution to ensure success and eliminate errors.
         6. Incorporate conditions for **filtering by user intent** and domain-specific logic (e.g., filtering by `SPECIFICATION` or `DRAWING_NUMBER`).
@@ -239,7 +232,7 @@ async def handle_query(userinput: ModelInput, db: SQLDatabase = Depends(get_db_c
         ]
 
         prompt = ChatPromptTemplate.from_messages(messages)
-        agent_executor = create_sql_agent(llm, db=db, agent_type="openai-tools", verbose=True, prompt=prompt)
+        agent_executor = create_sql_agent(llm, db=db, agent_type="openai-tools", verbose=True, prompt=prompt,top_k=topk)
 
         # Execute the query
         response = agent_executor.invoke(f"Now answer this query: {userinput}")["output"]
