@@ -40,8 +40,7 @@ scheduler.add_job(keep_connection_alive, 'interval', seconds=999999)
 
 # Function to get the database connection via dependency injection
 def get_db_connection():
-    db = SingletonSQLDatabase.get_instance()
-    return db
+    return SingletonSQLDatabase.get_instance()
 
 # The main query handler function
 @app.post("/query/")
