@@ -1,23 +1,29 @@
-import re
 import logging
 from fastapi import FastAPI, HTTPException, Depends
-from typing import Dict
+from typing import Dict, Optional, List
 from langchain_openai import ChatOpenAI
 from langchain_community.agent_toolkits.sql.toolkit import SQLDatabaseToolkit
-from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate, MessagesPlaceholder
-from langchain_core.messages import AIMessage, SystemMessage
 from langchain_community.utilities.sql_database import SQLDatabase
-from database import SingletonSQLDatabase  # Import the Singleton connection instance
+from database import SingletonSQLDatabase
 from custom_datatypes import ModelInput
 from langchain_community.agent_toolkits.sql.base import create_sql_agent
 from apscheduler.schedulers.background import BackgroundScheduler
-import threading
 from dotenv import load_dotenv
+import os
+from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate, MessagesPlaceholder
+from langchain_core.messages import AIMessage, SystemMessage
+from dotenv import load_dotenv
+from langchain_openai import AzureChatOpenAI
+
 import os
 load_dotenv()
 # OpenAI API Key
-openai_api_key = os.getenv("OPEN_API_KEY")
+# openai_api_key = os.getenv("OPEN_API_KEY")
 
+AZURE_OPENAI_API_KEY = os.getenv("AZURE_OPENAI_API_KEY")
+AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
+AZURE_OPENAI_DEPLOYMENT_NAME = os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME")
+OPENAI_API_VERSION = os.getenv("OPENAI_API_VERSION")
 
 
 # Initialize FastAPI application
@@ -47,14 +53,12 @@ def get_db_connection():
 async def handle_query(userinput: ModelInput, db: SQLDatabase = Depends(get_db_connection)) -> Dict:
     
     try:
-        # Initialize OpenAI LLM
-        llm = ChatOpenAI(
-            model="gpt-4o",
-            temperature=0,
-            streaming=True,
-            verbose=False,
-            openai_api_key=openai_api_key
-        )
+    
+        llm = AzureChatOpenAI(
+            api_key=AZURE_OPENAI_API_KEY,
+            azure_endpoint=AZURE_OPENAI_ENDPOINT,
+            api_version=OPENAI_API_VERSION,
+        )  
 
         # Initialize the SQLDatabaseToolkit with LLM and the database
         
