@@ -27,7 +27,6 @@ OPENAI_API_VERSION = os.getenv("OPENAI_API_VERSION")
 
 # Initialize FastAPI application
 app = FastAPI()
-
 # Function to keep the database connection alive
 def keep_connection_alive():
     try:
